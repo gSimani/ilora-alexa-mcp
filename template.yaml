@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: ILORA.ai on Alexa+ - MCP server (Streamable HTTP) and simulated Alexa+ client on AWS Lambda.
+
+Parameters:
+  Brain:
+    Type: String
+    Default: offline
+    AllowedValues: [offline, bedrock]
+    Description: 'Which model picks the tool. bedrock calls Amazon Bedrock (billed per token).'
+  BedrockModelId:
+    Type: String
+    Default: us.amazon.nova-lite-v1:0
+  Voice:
+    Type: String
+    Default: browser
+    AllowedValues: [browser, polly]
+    Description: 'polly reads answers with an Amazon Polly neural voice (billed per character).'
+
+Conditions:
+  UseBedrock: !Equals [!Ref Brain, bedrock]
+  UsePolly: !Equals [!Ref Voice, polly]
+
+Resources:
+  McpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .lambda/
+      Handler: index.handler
+      Runtime: nodejs22.x
+      Architectures: [arm64]
+      MemorySize: 512
+      Timeout: 20
+      # At most two copies run at once, which bounds what a public URL can spend.
+      ReservedConcurrentExecutions: 2
+      Environment:
+        Variables:
+          ILORA_DATA_DIR: /var/task/data
+          SIMULATOR_DIR: /var/task/simulator
+          BRAIN: !Ref Brain
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          VOICE: !Ref Voice
+          POLLY_VOICE: Ruth
+      FunctionUrlConfig:
+        AuthType: NONE
+      Policies:
+        - !If
+          - UseBedrock
+          - Statement:
+              - Effect: Allow
+                Action: [bedrock:InvokeModel]
+                Resource: "*"
+          - !Ref AWS::NoValue
+        - !If
+          - UsePolly
+          - Statement:
+              - Effect: Allow
+                Action: [polly:SynthesizeSpeech]
+                Resource: "*"
+          - !Ref AWS::NoValue
+
+Outputs:
+  McpEndpoint:
+    Description: MCP Streamable HTTP endpoint
+    Value: !Sub "${McpFunctionUrl.FunctionUrl}mcp"
+  SimulatorUrl:
+    Description: Simulated Alexa+ client
+    Value: !GetAtt McpFunctionUrl.FunctionUrl
