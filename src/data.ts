@@ -2,8 +2,8 @@
  * Reads the fictional demo dataset from /data.
  *
  * This is the "thin client" seam: a production deployment would replace these
- * readers with calls to the ILORA.ai API. The shapes mirror that API's rent
- * roll lines, lease abstracts and general-ledger statement lines.
+ * readers with calls to the ILORA.ai API. The shapes are similar to that API's
+ * rent roll lines, lease abstracts and general-ledger statement lines.
  */
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
