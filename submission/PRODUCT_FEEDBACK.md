@@ -4,7 +4,7 @@ One section per tool, API or SDK used, in the five questions the rules ask. Ever
 
 ## Model Context Protocol TypeScript SDK (`@modelcontextprotocol/sdk` 1.32.1)
 - **Used for:** The MCP server (`McpServer.registerTool` with `inputSchema`/`outputSchema`, `registerResource`), the Streamable HTTP transport (Node and web-standard), and the simulator's browser MCP client (`Client`, `StreamableHTTPClientTransport`).
-- **Worked well:** `LATEST_PROTOCOL_VERSION` is `2025-11-25` out of the box. Stateless Streamable HTTP with `enableJsonResponse` took a few lines. Zod schemas become JSON Schema in `tools/list` automatically, and the client validates results against `outputSchema`, which caught a real bug in our tests. Warm tool calls answer in 6 to 25 ms.
+- **Worked well:** `LATEST_PROTOCOL_VERSION` is `2025-11-25` out of the box. Stateless Streamable HTTP with `enableJsonResponse` took a few lines. Zod schemas become JSON Schema in `tools/list` automatically, and the client validates results against `outputSchema`, which caught a real bug in our tests. Warm tool calls answer in 3 to 21 ms on a laptop (measured October 20, 2026).
 - **Needs work:** The client validates `structuredContent` even when `isError` is true (friction log #3). The Node transport did not survive an Express-on-Lambda adapter (#4). No Lambda example in the README.
 - **Onboarding:** About 30 minutes from `npm install` to a server listed by Inspector.
 - **Build again:** Yes. The schema-first design is what makes Alexa-style tool selection reliable.
@@ -32,7 +32,7 @@ One section per tool, API or SDK used, in the five questions the rules ask. Ever
 - **Build again:** Yes. Zero cost when idle fits a judged demo.
 
 ## Amazon Bedrock (Converse API with tool use)
-- **Used for:** The brain, implemented in `src/assistant/bedrock.ts`: it passes the MCP tool list as Converse `toolSpec`s and returns which tool to call, as Alexa+ does. Enabled with `BRAIN=bedrock`.
+- **Built for (not used in the demo):** The brain, implemented in `src/assistant/bedrock.ts`: it passes the MCP tool list as Converse `toolSpec`s and returns which tool to call, as Alexa+ does. Enabled with `BRAIN=bedrock`.
 - **What happened:** Every Converse call from our account returned `ValidationException: Error 002: Access to Bedrock models is not allowed for this account`, for Nova Lite, Nova Micro and Claude Haiku 4.5, in us-east-1 and us-west-2, while `GetFoundationModelAvailability` reported the model AUTHORIZED and AVAILABLE and `ListFoundationModels` worked. Public AWS re:Post threads describe this as an account-level restriction that only AWS Support can clear. So the demo ran with the offline planner, and we say so on screen. See friction log #8.
 - **Worked well:** The Converse API's tool-use shape maps one-to-one onto MCP `tools/list`, so the brain is 60 lines.
 - **Needs work:** The error gives no reason and no action. The availability API says AUTHORIZED while every call is refused.

@@ -3,7 +3,7 @@
 **Project name:** ILORA.ai on Alexa+
 **Tagline:** Ask Alexa how your building is really doing, and get checked numbers with the exact line that doesn't add up.
 **Track:** Alexa+ (self-hosted MCP server, demonstrated through a simulated Alexa+ client)
-**Mini challenges:** AWS Builder (Lambda, Polly and SAM live; Bedrock integration built, account blocked, see below) and Open Source (new public repository, MIT license).
+**Mini challenges:** AWS Builder (used in the demo: AWS Lambda, Amazon Polly, AWS SAM; an Amazon Bedrock brain is built but not used in the demo, see below) and Open Source (new public repository, MIT license).
 **Repository:** https://github.com/gSimani/ilora-alexa-mcp (public, MIT license)
 **Video:** [YouTube link after upload]
 **Run it:** `npm install && npm run dev`, then open http://localhost:8787. No keys needed. Full steps in the README.
@@ -37,7 +37,7 @@ With the screen turned off, every answer still makes sense by voice alone.
 
 ## How it maps to the judging criteria
 
-- **Technical implementation:** real MCP server on spec 2025-11-25 over Streamable HTTP; schema-true outputs validated by the SDK client in tests; 43 tests covering every tool (happy path, unknown id, empty result), a golden conversation and latency; warm tool calls answer in 6 to 25 ms.
+- **Technical implementation:** real MCP server on spec 2025-11-25 over Streamable HTTP; schema-true outputs validated by the SDK client in tests; 43 tests covering every tool (happy path, unknown id, empty result), a golden conversation and latency; warm tool calls answer in 3 to 21 ms on a laptop (measured October 20, 2026).
 - **Design:** voice-first answers; one title, two figures and one action on the Card; a homogeneous List; a voice-only toggle; light and dark mode.
 - **Potential impact:** the users are owners, brokers and lenders of the millions of small commercial buildings, and the timing is a heavy refinance year.
 - **Quality of the idea:** not a chatbot over a spreadsheet. It catches money-losing mismatches and cites the line, built by a company already building this product.
@@ -69,7 +69,9 @@ With the screen turned off, every answer still makes sense by voice alone.
 
 ## Built with
 
-TypeScript, Node.js, Model Context Protocol (spec 2025-11-25, Streamable HTTP), MCP Apps, Zod, Express, Vite, Web Speech API, AWS Lambda, Amazon Bedrock, Amazon Polly, AWS SAM, Vitest
+TypeScript, Node.js, Model Context Protocol (spec 2025-11-25, Streamable HTTP), MCP Apps, Zod, Express, Vite, Web Speech API, AWS Lambda, Amazon Polly, AWS SAM, Vitest
+
+(An Amazon Bedrock brain is included in the code but was not used in the demo; see Challenges.)
 
 ## Built during the submission window
 
